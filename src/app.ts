@@ -1,7 +1,7 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder } from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, VideoDome} from "@babylonjs/core";
 
 class App {
     constructor() {
@@ -16,6 +16,15 @@ class App {
         var engine = new Engine(canvas, true);
         var scene = new Scene(engine);
 
+        var videoDome: VideoDome = new VideoDome(
+            "videoDome",
+            ["https://yoda.blob.core.windows.net/videos/uptale360.mp4"],
+            {
+                resolution: 32,
+                clickToPlay: true
+            },
+            scene
+        );
         var camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         var light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
