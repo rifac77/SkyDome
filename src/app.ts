@@ -1,7 +1,7 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, VideoDome} from "@babylonjs/core";
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, Mesh, MeshBuilder, VideoDome, StandardMaterial, VideoTexture} from "@babylonjs/core";
 
 class App {
     constructor() {
@@ -16,6 +16,12 @@ class App {
         var engine = new Engine(canvas, true);
         var scene = new Scene(engine);
 
+        // Camera and lights
+        var camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        var light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+
+        // Video Dome
         var videoDome: VideoDome = new VideoDome(
             "videoDome",
             ["https://yoda.blob.core.windows.net/videos/uptale360.mp4"],
@@ -25,10 +31,27 @@ class App {
             },
             scene
         );
-        var camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
-        camera.attachControl(canvas, true);
-        var light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+        
+        
+        // Sphere
         var sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+        var mat = new StandardMaterial ("mat", scene);
+        var videoTexture: VideoTexture = new VideoTexture("video", "https://yoda.blob.core.windows.net/videos/uptale360.mp4", scene, false, false, VideoTexture.TRILINEAR_SAMPLINGMODE,
+        {
+            autoPlay:true,
+            autoUpdateTexture:true
+        } );
+        mat.diffuseTexture = videoTexture;
+	    sphere.material = mat;	
+	
+	    sphere.rotation.y = Math.PI/3;
+	    sphere.rotation.x = 0;
+        sphere.rotation.z = Math.PI;
+
+        scene.onPointerUp = () => {
+            videoTexture.video.play()
+            scene.onPointerUp = null
+        }
 
         // hide/show the Inspector
         window.addEventListener("keydown", (ev) => {
